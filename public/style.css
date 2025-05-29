@@ -1,0 +1,790 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+
+
+
+
+/* === NAVBAR === */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 10px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  height: 40px;
+  margin-right: 20px;
+}
+
+.nav-links a {
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: purple;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.auth-bar {
+  list-style: none;
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.auth-btn {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: #e0d4f9;
+  color: purple;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.auth-btn:hover {
+  background-color: #d3c1f0;
+  transform: scale(1.05);
+}
+
+/* === HERO SECTION === */
+/* Hero Section */
+.hero {
+  background: url("images/stadium.png") no-repeat center center/cover;
+  padding: 60px 20px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.hero-text h1 {
+  font-size: 48px;
+  margin: 0;
+}
+
+/* Key Players */
+.key-players {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.key-players {
+  background: rgba(255, 255, 255, 0.9);
+  color: black;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 300px;
+}
+
+.key-players ul {
+  list-style: none;
+  padding: 0;
+}
+
+.key-players li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.key-players img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  margin-left: 10px;
+}
+
+.see-more {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  background: gray;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* === INFO CARDS === */
+.info-cards {
+  display: flex;
+  justify-content: space-around;
+  padding: 30px 20px;
+  background-color: white;
+}
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  width: 30%;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+/* === Ranking Table === */
+.league-table-section {
+  padding: 40px 20px;
+  background: url("images/stadium.png") no-repeat center center/cover;
+  backdrop-filter: blur(6px);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.table-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  overflow-x: auto;
+  max-width: 1000px;
+}
+
+.league-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 15px;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.league-table thead {
+  background-color: #5c6bc0; /* Indigo */
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.league-table th,
+.league-table td {
+  padding: 12px 8px;
+  border: 1px solid #ddd;
+}
+
+.league-table tbody tr:nth-child(even) {
+  background-color: #f5f8fa; /* light bluish gray */
+}
+
+.league-table tbody tr:hover {
+  background-color: #e3eaf0; /* hover effect */
+  transition: background-color 0.3s ease;
+}
+
+.league-table tbody td {
+  color: #333;
+}
+
+/* === Top 4 and Bottom 3 Coloring === */
+
+/* Top 4 - Greenish background */
+.league-table tbody tr.top-team {
+  background-color: #e0f6e8;
+  font-weight: bold;
+}
+
+/* Bottom 3 - Light red background */
+.league-table tbody tr.bottom-team {
+  background-color: #fde0e0;
+  color: #a70000;
+  font-weight: bold;
+}
+
+/* Optional: Smooth transitions for hover & visual feedback */
+.league-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .league-table {
+    font-size: 13px;
+  }
+  .league-table th,
+  .league-table td {
+    padding: 8px 6px;
+  }
+}
+
+/* === ΟΜΑΔΕΣ - ΑΝΑΖΗΤΗΣΗ ΚΑΙ ΛΟΓΟΤΥΠΑ === */
+/* === ΟΜΑΔΕΣ - ΑΝΑΖΗΤΗΣΗ ΚΑΙ ΛΟΓΟΤΥΠΑ === */
+.teams-search-section {
+  text-align: center;
+  padding: 50px 20px 70px;
+  background: url("images/stadium.png") no-repeat center center/cover;
+  color: #111;
+}
+
+.teams-search-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#teamSearch {
+  padding: 12px 20px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  font-size: 16px;
+  background-color: #f9f4f9;
+}
+
+/* Grid of logos */
+.team-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.team-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.team-logo:hover {
+  transform: scale(1.15);
+}
+
+/*=======for the FIXTURES page======  */
+
+.fixtures-section {
+  padding: 40px 20px;
+  background: url("images/stadium.png") no-repeat center center/cover;
+  backdrop-filter: blur(4px);
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+}
+
+#monthSelect {
+  display: flex;
+  margin: 0 auto;
+  padding: 6px 30px 6px 12px;
+  border-radius: 6px;
+}
+/* Table Styling */
+.fixtures-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fixtures-table thead {
+  background: #212121;
+  color: #fff;
+}
+
+.fixtures-table th,
+.fixtures-table td {
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.fixtures-table tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.fixtures-table tbody tr:hover {
+  background: #f1f1f1;
+}
+
+.fixtures-table th {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* Card-like effect for date picker */
+.top-bar {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.top-box {
+  background: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.top-box label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.date-picker {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 1rem;
+}
+
+/* Responsive Table Wrapper */
+.table-wrapper {
+  margin: 20px auto;
+  max-width: 1000px;
+  width: 95%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+
+
+
+/* === TEAM PAGE =================================================== */
+.team-info {
+  background: #fff;
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 700px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.team-info h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.team-info img#team-logo {
+  width: 80px;
+  margin: 20px 0;
+}
+
+.team-info p {
+  font-size: 1rem;
+  margin: 8px 0;
+  color: #555;
+}
+
+#player-list {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+#player-list li {
+  margin: 8px 0;
+}
+
+#player-list li a {
+  text-decoration: none;
+  color: #007BFF;
+  transition: color 0.3s;
+}
+
+#player-list li a:hover {
+  color: #0056b3;
+}
+
+/* === TEAM PAGE - With stadium background === */
+.team-page-section {
+  padding: 40px 20px;
+  background: url("images/stadium.png") no-repeat center center/cover;
+  backdrop-filter: blur(4px);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.team-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+}
+
+.team-card h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.team-card img {
+  width: 80px;
+  margin: 20px 0;
+}
+
+.team-card p {
+  font-size: 1rem;
+  margin: 8px 0;
+  color: #555;
+}
+
+#player-list {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+#player-list li {
+  margin: 8px 0;
+}
+
+#player-list li a {
+  text-decoration: none;
+  color: #007BFF;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+#player-list li a:hover {
+  color: #0056b3;
+}
+#back-btn {
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 8px 16px;
+  background-color: #e0d4f9;
+  color: purple;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#back-btn:hover {
+  background-color: #d3c1f0;
+  transform: scale(1.05);
+}
+
+/* === COACH CARD STYLING === */
+.coach-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.coach-card:hover {
+  transform: scale(1.02);
+}
+
+.coach-card a {
+  color: #333;
+  text-decoration: none;
+  display: block;
+}
+
+.coach-card a h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.coach-card a p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.team-page {                        
+  justify-content: center;          
+  align-items: flex-start;          
+}
+
+.team-card {                        
+  width: 90%;
+  max-width: 900px;
+  position: relative;
+}
+
+.team-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+
+
+h4 { margin-bottom: 10px; } 
+
+/* === Player Profile === */
+.player-info {
+  background: #fff;
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.player-info h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.player-info p {
+  font-size: 1rem;
+  margin: 8px 0;
+  color: #555;
+}
+
+.player-info a {
+  display: inline-block;
+  margin-top: 15px;
+  text-decoration: none;
+  color: #007BFF;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.player-info a:hover {
+  color: #0056b3;
+}
+
+.player-page-section {
+  background: url("images/stadium.png") no-repeat center center/cover;
+  backdrop-filter: blur(4px);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center vertically! */
+  padding: 40px 20px;
+}
+
+.player-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center; /* Center the text! */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#back-btn {
+  display: inline-block;
+  margin-top: 20px; /* Now appears after player info */
+  padding: 8px 16px;
+  background-color: #e0d4f9;
+  color: purple;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#back-btn:hover {
+  background-color: #d3c1f0;
+  transform: scale(1.05);
+}
+
+/*  RESULTS  +  HISTORY  (two columns inside one blue-bordered card)   */
+
+.results-history-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 40px;
+  /* border: 3px solid #1e73ff;       */
+}
+
+
+.recent-results,
+.history-box {
+  flex: 1;
+  text-align: center;
+}
+
+
+.teams-vs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;                     
+  margin-top: 20px;
+}
+
+.team-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-block img.team-crest {
+  width: 90px;
+  height: auto;
+}
+
+.score {
+  font-size: 1.25rem;
+  margin-top: 4px;
+}
+
+.vs {                            
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* ---------- History calendar (just the date picker for now) -------- */
+.history-calendar {
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+/* Player page section with stadium background */
+.player-page-section {
+  background: url("images/stadium.png") no-repeat center center/cover;
+  backdrop-filter: blur(4px);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+}
+
+/* Player card styling */
+.player-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Back button styling */
+#back-btn {
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 8px 16px;
+  background-color: #e0d4f9;
+  color: purple;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#back-btn:hover {
+  background-color: #d3c1f0;
+  transform: scale(1.05);
+}
+
+
+/*  STATISTICS  (empty table placeholder)                              */
+/* === Statistics Section === */
+.statistics-section {
+  padding: 40px 20px;
+  backdrop-filter: blur(3px);
+  min-height: 100vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+  width: 100%;
+  max-width: 800px;
+}
+
+.stats-buttons button {
+  padding: 20px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.stats-buttons button:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 1);
+}
+
+.stats-buttons button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+}
+
+.stat-result {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px 25px;
+  border-radius: 10px;
+  max-width: 500px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+
+
+
+@media (max-width: 600px) {
+  .results-history-card {
+    flex-direction: column;
+  }
+}

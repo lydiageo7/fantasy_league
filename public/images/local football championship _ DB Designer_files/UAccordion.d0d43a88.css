@@ -1,0 +1,1 @@
+.u-accordion{border-radius:var(--border-radius);overflow:hidden;margin:.5em 0}.u-accordion .header .icon{transition:transform .25s}.u-accordion .header .icon.opened{transform:rotate(90deg)}.u-accordion.flat{box-shadow:none!important}.u-accordion .body{position:relative;padding:0;height:0;transition:height .25s}

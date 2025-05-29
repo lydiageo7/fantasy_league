@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fantasyland League</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <style>
+    /* Overlay for intro animation */
+    .intro-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #cceeff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .intro-ball {
+      width: 80px;
+      height: 80px;
+      background: url('images/football.png') no-repeat center center/cover;
+      animation: bounce 1.5s infinite alternate, spin 1.5s linear infinite;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100px); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro animation overlay -->
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-ball"></div>
+  </div>
+
+  <!-- Your existing homepage content goes here... -->
+  <header class="navbar">
+    <!-- navbar content -->
+  </header>
+  <main>
+    <!-- page content -->
+  </main>
+
+  <script>
+    // Wait 3 seconds then fade out the intro overlay
+    window.addEventListener("load", () => {
+      const introOverlay = document.getElementById("introOverlay");
+      setTimeout(() => {
+        introOverlay.style.transition = "opacity 1s ease";
+        introOverlay.style.opacity = 0;
+        setTimeout(() => introOverlay.style.display = "none", 1000);
+      }, 1000); // show for 1 second
+    });
+  </script>
+</body>
+</html>
+<!-- Navbar -->
+<header class="navbar">
+  <a href="index.html">
+    <img src="images/football.png" alt="Football Logo" class="logo" />
+  </a>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="table.html">Table</a></li>
+      <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+      <li><a href="teamSearch.html">Teams</a></li>
+      <li><a href="statistics.html">Statistics</a></li>
+    </ul>
+  </nav>
+  <ul class="auth-bar">
+    <li><button class="auth-btn" onclick="window.location.href='/admin/login'">Sign in</button></li>
+    <li><button class="auth-btn" onclick="window.location.href='/admin/register'">Register</button></li>      
+  </ul>
+</header>
+
+<!-- Hero Banner -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>Fantasyland League</h1>
+    <p>Welcome to the most exciting football championship!</p>
+  </div>
+  <div class="key-players">
+    <h3>This Season’s Key Players</h3>
+    <ul id="topScorersList">
+      <!-- Dynamic content will be inserted here -->
+    </ul>
+    <button class="see-more" onclick="window.location.href='statistics.html'">See more</button>
+  </div>
+</section>
+
+<!-- Info Cards -->
+<section class="info-cards">
+  <div class="card">
+    <h4>Game On – Don’t Miss Out!</h4>
+    <p>Witness the action, the passion, and the pride. Grab your tickets and be there for every goal!</p>
+  </div>
+  <div class="card">
+    <h4>Upcoming Fixtures</h4>
+    <p>Stay informed about our upcoming matches, important dates, and key events throughout the season.</p>
+  </div>
+  <div class="card">
+    <h4>We’re All in This Together!</h4>
+    <p>Our site is proud to give back. Proceeds from game-day merchandise support neighborhood charities and causes.</p>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const topScorersList = document.getElementById("topScorersList");
+
+  try {
+    const res = await fetch('/api/statistics');
+    const data = await res.json();
+
+    if (!data.topScorers || data.topScorers.length === 0) {
+      topScorersList.innerHTML = "<li>No top scorers data available.</li>";
+      return;
+    }
+
+    data.topScorers.forEach(player => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>Goals: ${player.goals}</span> 
+        <a href="player.html?id=${player.player_id}">${player.player_name}</a>
+      `;
+      topScorersList.appendChild(li);
+    });
+  } catch (err) {
+    console.error("Error fetching top scorers:", err);
+    topScorersList.innerHTML = "<li>Error loading top scorers.</li>";
+  }
+});
+</script>
+
+</body>
+</html>
+
+

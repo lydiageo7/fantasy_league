@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadata and page title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Results & Fixtures</title>
+  <!-- Link to the stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar with navigation links and authentication buttons -->
+  <header class="navbar">
+    <a href="index.html">
+      <img src="images/football.png" alt="Football Logo" class="logo" />
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="table.html">Table</a></li>
+        <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+        <li><a href="teamSearch.html">Teams</a></li>
+        <li><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </nav>
+    <ul class="auth-bar">
+      <li><button class="auth-btn">Sign in</button></li>
+      <li><button class="auth-btn">Register</button></li>
+    </ul>
+  </header>
+
+  <!-- Date Picker Section: Allows users to select a specific date -->
+  <section class="top-bar">
+    <div class="top-box">
+      <label for="datePicker">Select Date:</label>
+      <input
+        type="date"
+        id="datePicker"
+        class="date-picker"
+        min="2025-01-01"
+        max="2025-06-30"
+        value="2025-05-18"
+      />
+    </div>
+  </section>
+
+  <!-- Fixtures Table Section -->
+  <section class="fixtures-section">
+    <div class="table-wrapper">
+      <table class="fixtures-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Home Team</th>
+            <th>Opponent</th>
+            <th>Score</th>
+            <th>Field</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="fixturesTableBody">
+          <!-- Matches data will be dynamically inserted here by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- JavaScript to handle fetching and displaying match data -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const datePicker = document.getElementById("datePicker");
+    const tableBody = document.getElementById("fixturesTableBody");
+
+    // Function to load matches based on given parameters (date or month)
+    async function loadMatches(params) {
+      try {
+        // Convert the params object to a URL-encoded string
+        const query = new URLSearchParams(params).toString();
+        // Fetch match data from the API endpoint
+        const res = await fetch(`/api/matches?${query}`);
+        const matches = await res.json();
+
+        // Clear any existing rows
+        tableBody.innerHTML = "";
+
+        if (matches.length === 0) {
+          // If no matches found, display a single row with a message
+          const row = document.createElement("tr");
+          row.innerHTML = `<td colspan="6">No matches found</td>`;
+          tableBody.appendChild(row);
+        } else {
+          // Loop through matches and create a row for each
+          matches.forEach(match => {
+            const row = document.createElement("tr");
+
+            // Clean the team names for URL linking (lowercase, no spaces/special chars)
+            const homeCleaned = match.home_team.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+            const guestCleaned = match.guest_team.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+
+            // Create the row HTML
+            row.innerHTML = `
+              <td>${match.date}</td>
+              <td><a href="teams.html?name=${homeCleaned}" class="team-link">${match.home_team}</a></td>
+              <td><a href="teams.html?name=${guestCleaned}" class="team-link">${match.guest_team}</a></td>
+              <td>${match.score_home_team} - ${match.score_guest_team}</td>
+              <td>${match.field}</td>
+              <td>${match.result}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        }
+      } catch (err) {
+        // If an error occurs (e.g., network error), show error message in the table
+        console.error("Error fetching matches:", err);
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="6">Error loading data</td>`;
+        tableBody.appendChild(row);
+      }
+    }
+
+    // Function to load matches for the entire month of the selected date
+    function loadMatchesOfMonth() {
+      const selectedDate = datePicker.value;
+      const yearMonth = selectedDate.slice(0, 7); // e.g., '2025-03'
+      loadMatches({ yearMonth });
+    }
+
+    // Function to load matches only for the selected date
+    function loadMatchesOfDate() {
+      const selectedDate = datePicker.value;
+      loadMatches({ date: selectedDate });
+    }
+
+    // On initial page load, show matches for the month of the selected date
+    loadMatchesOfMonth();
+
+    // Event listener: when the date picker changes
+    datePicker.addEventListener("change", () => {
+      const selectedDate = datePicker.value;
+
+      // If the day is the first of the month (e.g., '2025-03-01'), show all matches for that month
+      if (selectedDate.endsWith('-01')) {
+        loadMatchesOfMonth();
+      } else {
+        // Otherwise, show matches only for that specific day
+        loadMatchesOfDate();
+      }
+    });
+  });
+  </script>
+
+</body>
+</html>
+
+
+

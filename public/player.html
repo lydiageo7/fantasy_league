@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic metadata and page title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Player Profile</title>
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar for navigation links -->
+  <header class="navbar">
+    <a href="index.html">
+      <!-- Site logo linking back to the home page -->
+      <img src="images/football.png" alt="Football Logo" class="logo" />
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="table.html">Table</a></li>
+        <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+        <li><a href="teamSearch.html">Teams</a></li>
+        <li><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Player Information Section -->
+  <section class="player-page-section">
+    <div class="player-card">
+      <!-- Player details will be dynamically populated here -->
+      <h1 id="player-name">Loading...</h1>
+      <p id="player-age"></p>
+      <p id="player-years"></p>
+      <p id="player-bio"></p>
+
+      <!-- Back button to return to the previous page -->
+      <button id="back-btn" onclick="goBack()">← Back to the Team</button>
+    </div>
+  </section>
+
+  <script>
+    // Get the player ID from the URL's query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerId = urlParams.get("id");
+
+    // Function to load player details from the API
+    async function loadPlayerDetails() {
+      try {
+        // Fetch player data using the API endpoint with the player ID
+        const res = await fetch(`/api/players/${playerId}`);
+        const player = await res.json();
+
+        // If player data is not found, show a message
+        if (!player) {
+          document.getElementById('player-name').textContent = "Player not found";
+          return;
+        }
+
+        // Populate the HTML elements with the fetched player data
+        document.getElementById('player-name').textContent = `${player.name} ${player.lastname}`;
+        document.getElementById('player-age').textContent = `Age: ${player.age}`;
+        document.getElementById('player-years').textContent = `Active Years: ${player.active_years}`;
+        document.getElementById('player-bio').textContent = `Bio: ${player.biography}`;
+      } catch (err) {
+        // Handle errors such as network issues or API failures
+        console.error("Failed to load player details:", err);
+        document.getElementById('player-name').textContent = "Error loading player.";
+      }
+    }
+
+    // Function to go back to the previous page
+    function goBack() {
+      window.history.back(); // Takes the user back to the previous page they came from
+    }
+
+    // Load player details as soon as the page is loaded
+    loadPlayerDetails();
+  </script>
+
+</body>
+</html>
+
+

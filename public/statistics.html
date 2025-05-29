@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Page metadata and styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>League Statistics</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js library for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Navbar for site navigation -->
+<header class="navbar">
+  <a href="index.html">
+    <img src="images/football.png" alt="Football Logo" class="logo" />
+  </a>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="table.html">Table</a></li>
+      <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+      <li><a href="teamSearch.html">Teams</a></li>
+      <li><a href="statistics.html">Statistics</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Statistics Section: buttons, results area, and chart area -->
+<section class="statistics-section" style="background: url('images/stadium.png') no-repeat center center/cover;">
+  <h1>League Statistics</h1>
+  <!-- Buttons for different statistic categories -->
+  <div class="stats-buttons">
+    <button data-stat="topScoringTeams">Top 3 Scoring Teams</button>
+    <button data-stat="bestDefence">Best Defence</button>
+    <button data-stat="avgGoals">Avg Goals per Match</button>
+    <button data-stat="mostWins">Most Wins</button>
+    <button data-stat="mostDraws">Most Draws</button>
+    <button data-stat="mostLosses">Most Losses</button>
+    <button data-stat="topScorers">Top 3 Scorers</button>
+    <button data-stat="allTeamsGoals">All Teams & Goals</button>
+    <button data-stat="playersStats">Players Statistics</button>
+  </div>
+
+  <!-- Area for dynamic statistic content -->
+  <div id="statResult" class="stat-result"></div>
+  <!-- Chart canvas for displaying data visually -->
+  <canvas id="statChart" width="400" height="200"></canvas>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Grab references to elements
+  const buttons = document.querySelectorAll(".stats-buttons button");
+  const statResult = document.getElementById("statResult");
+  const statChartCanvas = document.getElementById("statChart");
+  let statChart; // Chart.js instance
+
+  // Add click event listeners to each stat button
+  buttons.forEach(button => {
+    button.addEventListener("click", async () => {
+      const statKey = button.getAttribute("data-stat"); // Determine which stat to fetch
+      try {
+        // Fetch the statistics data from the server
+        const res = await fetch('/api/statistics');
+        const data = await res.json();
+
+        let content = ""; // Will hold the HTML content
+        let chartData = null; // Will hold the data for the chart (if applicable)
+
+        // Choose what to display based on the clicked button
+        switch (statKey) {
+          case "topScoringTeams":
+            // Show top 3 scoring teams
+            content = `<h3>Top 3 Scoring Teams:</h3><ol>`;
+            const teamNames = [];
+            const teamGoals = [];
+            data.topScoringTeams.forEach(team => {
+              content += `<li>${team.team_name} (${team.goals_scored} goals)</li>`;
+              teamNames.push(team.team_name);
+              teamGoals.push(team.goals_scored);
+            });
+            content += `</ol>`;
+            // Prepare data for doughnut chart
+            chartData = {
+              labels: teamNames,
+              datasets: [{
+                data: teamGoals,
+                backgroundColor: ["#f44336", "#ff9800", "#4caf50"]
+              }]
+            };
+            break;
+
+          case "bestDefence":
+            // Show best defence team
+            content = `<h3>Best Defence: ${data.bestDefence.team_name} (${data.bestDefence.goals_conceded} goals conceded)</h3>`;
+            chartData = {
+              labels: [data.bestDefence.team_name, "Others"],
+              datasets: [{
+                data: [data.bestDefence.goals_conceded, 0],
+                backgroundColor: ["#2196f3", "#e0e0e0"]
+              }]
+            };
+            break;
+
+          case "avgGoals":
+            // Show average goals per match
+            content = `<h3>Average Goals per Match: ${parseFloat(data.avgGoals.avg_goals).toFixed(2)}</h3>`;
+            break;
+
+          case "mostWins":
+            content = `<h3>Most Wins: ${data.mostWins.team_name} (${data.mostWins.wins} wins)</h3>`;
+            break;
+
+          case "mostDraws":
+            content = `<h3>Most Draws: ${data.mostDraws.team_name} (${data.mostDraws.draws} draws)</h3>`;
+            break;
+
+          case "mostLosses":
+            content = `<h3>Most Losses: ${data.mostLosses.team_name} (${data.mostLosses.losses} losses)</h3>`;
+            break;
+
+          case "topScorers":
+            // Top 3 scorers: player name as link to player profile
+            content = `<h3>Top 3 Scorers:</h3><ol>`;
+            const names = [];
+            const goals = [];
+            data.topScorers.forEach(player => {
+              content += `<li><a href="player.html?id=${player.player_id}">${player.player_name}</a> (${player.goals} goals)</li>`;
+              names.push(player.player_name);
+              goals.push(player.goals);
+            });
+            content += `</ol>`;
+            chartData = {
+              labels: names,
+              datasets: [{
+                data: goals,
+                backgroundColor: ["#f44336", "#ff9800", "#4caf50"]
+              }]
+            };
+            break;
+
+          case "allTeamsGoals":
+            // All teams with their goal counts
+            content = `<h3>All Teams & Goals:</h3><ol>`;
+            const allNames = [];
+            const allGoals = [];
+            data.allTeamsGoals.forEach(team => {
+              content += `<li>${team.team_name} (${team.goals_scored} goals)</li>`;
+              allNames.push(team.team_name);
+              allGoals.push(team.goals_scored);
+            });
+            content += `</ol>`;
+            chartData = {
+              labels: allNames,
+              datasets: [{
+                data: allGoals,
+                backgroundColor: allNames.map(() => `hsl(${Math.random()*360}, 70%, 60%)`) // random pastel colors
+              }]
+            };
+            break;
+
+          case "playersStats":
+            // Players stats table with links to player profiles
+            content = `<h3>Players Statistics:</h3>
+              <table border="1">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Team</th>
+                    <th>Matches Played</th>
+                    <th>Goals</th>
+                    <th>Yellow Cards</th>
+                    <th>Red Cards</th>
+                  </tr>
+                </thead>
+                <tbody>`;
+            data.playersStats.forEach(player => {
+              content += `<tr>
+                <td><a href="player.html?id=${player.player_id}">${player.player_name}</a></td>
+                <td>${player.team_name || "N/A"}</td>
+                <td>${player.matches_played}</td>
+                <td>${player.goals_scored}</td>
+                <td>${player.yellow_cards}</td>
+                <td>${player.red_cards}</td>
+              </tr>`;
+            });
+            content += `</tbody></table>`;
+            break;
+
+          default:
+            content = "No data.";
+        }
+
+        // Update the page with the new content
+        statResult.innerHTML = content;
+
+        // If chart data exists, render it using Chart.js
+        if (chartData) {
+          if (statChart) {
+            statChart.destroy(); // Remove previous chart
+          }
+          statChart = new Chart(statChartCanvas, {
+            type: statKey === "playersStats" ? "bar" : "doughnut", // Use bar chart for player stats, doughnut for others
+            data: chartData,
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: true, position: 'bottom' }
+              }
+            }
+          });
+        } else if (statChart) {
+          statChart.destroy();
+        }
+
+      } catch (err) {
+        // Handle any errors
+        console.error("Error fetching statistics:", err);
+        statResult.innerHTML = "<p>Error loading statistics.</p>";
+        if (statChart) statChart.destroy();
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>
+
+

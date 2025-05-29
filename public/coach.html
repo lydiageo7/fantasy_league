@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic meta information and page title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coach Profile</title>
+
+  <!-- Link  CSS file for styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Navbar: links to other pages -->
+  <header class="navbar">
+    <a href="index.html">
+      <img src="images/football.png" alt="Football Logo" class="logo" />
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="table.html">Table</a></li>
+        <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+        <li><a href="teamSearch.html">Teams</a></li>
+        <li><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Section for displaying the coach's information -->
+  <section class="player-info player-page-section">
+    <div class="player-card">
+      <!-- Back button to return to the team page -->
+      <button id="back-btn" onclick="goBack()">← Back to Team</button>
+      <!-- Coach details will be dynamically populated here -->
+      <h1 id="coach-name">Loading...</h1>
+      <p id="coach-nationality"></p>
+      <p id="coach-age"></p>
+      <p id="coach-bio"></p>
+    </div>
+  </section>
+
+  <script>
+    // Get query parameters from the URL (e.g., coach ID and team name)
+    const urlParams = new URLSearchParams(window.location.search);
+    const coachId = urlParams.get("id");       // Coach ID to fetch data for
+    const teamName = urlParams.get("team");    // Team name for the back button
+
+    // Function to go back to the team page with the team name as a parameter
+    function goBack() {
+      window.location.href = `teams.html?name=${teamName}`;
+    }
+
+    // Function to load coach details from the API
+    async function loadCoachDetails() {
+      try {
+        // Fetch coach data from the API endpoint using coachId
+        const res = await fetch(`/api/coach/${coachId}`);
+        const coach = await res.json();
+
+        // Populate the page with the fetched coach data
+        document.getElementById('coach-name').textContent = `${coach.c_name} ${coach.c_lastname}`;
+        document.getElementById('coach-nationality').textContent = `Nationality: ${coach.nationality}`;
+        document.getElementById('coach-age').textContent = `Age: ${coach.age}`;
+        document.getElementById('coach-bio').textContent = `Bio: ${coach.biography}`;
+      } catch (err) {
+        // Handle errors, such as if the API call fails
+        console.error("Failed to load coach details:", err);
+        document.getElementById('coach-name').textContent = "Error loading coach.";
+      }
+    }
+
+    // Call the function to load coach details when the page loads
+    loadCoachDetails();
+  </script>
+</body>
+</html>
+

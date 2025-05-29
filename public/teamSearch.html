@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic metadata and title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teams</title>
+  <!-- Link to the CSS file for styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  
+  <!-- Navbar for site navigation -->
+  <header class="navbar">
+    <a href="index.html">
+      <img src="images/football.png" alt="Football Logo" class="logo" />
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="table.html">Table</a></li>
+        <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+        <li><a href="teamSearch.html">Teams</a></li>
+        <li><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </nav>
+    <!-- Authentication buttons -->
+    <ul class="auth-bar">
+      <li><button class="auth-btn">Sign in</button></li>
+      <li><button class="auth-btn">Register</button></li>      
+    </ul>
+  </header>
+
+  <!-- Search section where users can type to search for teams -->
+  <section class="teams-search-section">
+    <h2>Search for your favourite team</h2>
+    <input type="text" id="teamSearch" placeholder="🔍 Search for a team" />
+  </section>
+
+  <!-- Section where team logos will be displayed as a grid -->
+  <section class="team-logos" id="logosGrid">
+    <!-- Logos will be dynamically inserted here -->
+  </section>
+
+  <!-- JavaScript to handle loading teams, search, and navigation -->
+  <script>
+    const searchInput = document.getElementById('teamSearch'); // Input element for search
+    const logosGrid = document.getElementById('logosGrid'); // Container for team logos
+
+    // Fetch the list of teams from the API and populate the grid
+    async function loadTeamsFromAPI() {
+      try {
+        const res = await fetch('/api/teams'); // Fetch data from API
+        const teams = await res.json();
+
+        // For each team, create an image and a link
+        teams.forEach(team => {
+          // Clean the team name for file name / URL
+          const cleanedName = team.team_name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+
+          console.log('Loading image for:', cleanedName); // Debug log
+
+          const img = document.createElement('img');
+          img.src = `images/${cleanedName}.png`; // Team logo image
+          img.alt = team.team_name; // Alt text for accessibility
+          img.className = 'team-logo'; // CSS class for styling
+          img.setAttribute('data-name', team.team_name.toLowerCase()); // Store the team name for search
+
+          // Wrap the image in a link to the team details page
+          const link = document.createElement('a');
+          link.href = `teams.html?name=${cleanedName}`;
+          link.appendChild(img);
+
+          // Add the link to the logos grid
+          logosGrid.appendChild(link);
+        });
+      } catch (err) {
+        console.error('Failed to load teams:', err);
+      }
+    }
+
+    // Live search feature: filter logos as the user types
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase(); // Get the search query
+      const logos = document.querySelectorAll('.team-logo'); // All team logos
+      logos.forEach(logo => {
+        const name = logo.getAttribute('data-name'); // Get team name from data attribute
+        // Show/hide logos based on whether they include the query
+        logo.parentElement.style.display = name.includes(query) ? 'inline-block' : 'none';
+      });
+    });
+
+    // When the user presses Enter, go directly to the team’s page
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); // Prevent form submission or default behavior
+        const query = searchInput.value.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+        window.location.href = `teams.html?name=${query}`; // Redirect to team’s page
+      }
+    });
+
+    // Load the team logos when the page loads
+    loadTeamsFromAPI();
+  </script>
+
+</body>
+</html>
+
+

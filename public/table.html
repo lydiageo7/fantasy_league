@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadata and page title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>League Table</title>
+  <!-- Link to external CSS file for styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Navbar for site navigation -->
+<header class="navbar">
+  <a href="index.html">
+    <img src="images/football.png" alt="Football Logo" class="logo" />
+  </a>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="table.html">Table</a></li>
+      <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+      <li><a href="teamSearch.html">Teams</a></li>
+      <li><a href="statistics.html">Statistics</a></li>
+    </ul>
+  </nav>
+  <!-- Authentication bar -->
+  <ul class="auth-bar">
+    <li><button class="auth-btn">Sign in</button></li>
+    <li><button class="auth-btn">Register</button></li>
+  </ul>
+</header>
+
+<!-- Section containing the league table -->
+<section class="league-table-section" style="background: url('images/stadium.png') no-repeat center center/cover;">
+  <div class="table-wrapper">
+    <table class="league-table">
+      <thead>
+        <tr>
+          <!-- Table header for the ranking table -->
+          <th>#</th>
+          <th>Team</th>
+          <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>F</th>
+          <th>A</th>
+          <th>+/-</th>
+          <th>Pts</th>
+        </tr>
+      </thead>
+      <tbody id="rankingTableBody">
+        <!-- Table rows will be dynamically populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Script to load rankings data and populate the table -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tableBody = document.getElementById("rankingTableBody");
+
+    // Function to fetch rankings data from the API and render it
+    async function loadRankings() {
+      try {
+        // Fetch rankings from the API endpoint
+        const res = await fetch('/api/rankings');
+        const data = await res.json();
+
+        // Clear any existing table rows
+        tableBody.innerHTML = "";
+
+        // If there is no data, show a message
+        if (!data.length) {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td colspan="10">No data available</td>`;
+          tableBody.appendChild(row);
+          return;
+        }
+
+        // Loop through each team’s ranking data
+        data.forEach((team, index) => {
+          const row = document.createElement("tr");
+
+          // Apply different styling classes for top 4 and bottom 3 teams
+          if (index < 4) row.classList.add("top-team"); // Top teams
+          else if (index >= data.length - 3) row.classList.add("bottom-team"); // Bottom teams
+
+          // Calculate goal difference (F - A)
+          const goalDiff = (team.F !== null && team.A !== null) ? (team.F - team.A) : 0;
+          const sign = goalDiff >= 0 ? "+" : ""; // Add '+' sign for positive diff
+
+          // Clean the team name for linking to the team page (lowercase, no special chars)
+          const cleanedName = team.team_name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+
+          // Create table row with team data
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>
+              <a href="teams.html?name=${cleanedName}" class="team-link">
+                <img src="images/${cleanedName}.png" alt="${team.team_name} logo" width="20" height="20" style="vertical-align: middle; margin-right: 8px;">
+                ${team.team_name}
+              </a>
+            </td>
+            <td>${team.P ?? 0}</td>
+            <td>${team.W ?? 0}</td>
+            <td>${team.D ?? 0}</td>
+            <td>${team.L ?? 0}</td>
+            <td>${team.F ?? 0}</td>
+            <td>${team.A ?? 0}</td>
+            <td>${sign}${goalDiff}</td>
+            <td>${team.Pts ?? 0}</td>
+          `;
+
+          // Append the row to the table body
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        // Handle errors: show error message in the table
+        console.error("Error loading rankings:", err);
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="10">Error loading rankings</td>`;
+        tableBody.appendChild(row);
+      }
+    }
+
+    // Initial load of rankings data
+    loadRankings();
+  });
+</script>
+
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadata and page title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Details</title>
+  <!-- Link to external CSS file for styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Navbar for site navigation and authentication buttons -->
+  <header class="navbar">
+    <a href="index.html">
+      <img src="images/football.png" alt="Football Logo" class="logo" />
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="table.html">Table</a></li>
+        <li><a href="resultsFixtures.html">Results/Fixtures</a></li>
+        <li><a href="teamSearch.html">Teams</a></li>
+        <li><a href="statistics.html">Statistics</a></li>
+      </ul>
+    </nav>
+    <ul class="auth-bar">
+      <li><button class="auth-btn">Sign in</button></li>
+      <li><button class="auth-btn">Register</button></li>      
+    </ul>
+  </header>
+
+  <!-- Team Information Section -->
+  <section class="team-page-section">
+    <div class="team-card">
+      <!-- Back button to return to the team search page -->
+      <button id="back-btn" onclick="goBack()">← Back to Teams</button>
+      <!-- Team details will be populated here -->
+      <h1 id="team-name">Loading...</h1>
+      <img id="team-logo" alt="Team Logo" />
+      <p id="team-home"></p>
+      <p id="team-players"></p>
+
+      <!-- Players list -->
+      <h2>Players</h2>
+      <ul id="player-list"></ul>
+
+      <!-- Coaching staff list -->
+      <h2>Coaching Staff</h2>
+      <div id="coaches-section"></div>
+    </div>
+  </section>
+
+  <!-- JavaScript to dynamically load team data, players, and coaches -->
+  <script>
+    // Get the team name from the URL parameters (e.g., ?name=teamname)
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamQueryName = urlParams.get("name");
+
+    // Function to go back to the team search page
+    function goBack() {
+      window.location.href = "teamSearch.html";
+    }
+
+    // Function to load team details
+    async function loadTeamDetails() {
+      try {
+        // Fetch all teams from the API
+        const res = await fetch('/api/teams');
+        const teams = await res.json();
+
+        // Find the team that matches the cleaned team name from the URL
+        const team = teams.find(t =>
+          t.team_name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '') === teamQueryName
+        );
+
+        // If team not found, show an error message
+        if (!team) {
+          document.getElementById('team-name').textContent = "Team not found";
+          return;
+        }
+
+        // Prepare the cleaned team name (for logos, links, etc.)
+        const cleanedName = team.team_name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '');
+
+        // Update the page with team details
+        document.getElementById('team-name').textContent = team.team_name;
+        document.getElementById('team-logo').src = `images/${cleanedName}.png`;
+        document.getElementById('team-home').textContent = `Home Field: ${team.home_field}`;
+        document.getElementById('team-players').textContent = `Number of Players: ${team.number_of_players}`;
+
+        // Load the players of the team
+        const playersRes = await fetch(`/api/players?team_id=${team.team_id}`);
+        const players = await playersRes.json();
+        const playerList = document.getElementById('player-list');
+
+        players.forEach(player => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          // Link to the player profile page with the player's ID and team name
+          a.href = `player.html?id=${player.player_id}&team=${cleanedName}`;
+          a.textContent = `${player.name} ${player.lastname}`;
+          li.appendChild(a);
+          playerList.appendChild(li);
+        });
+
+        // Load the coaches of the team
+        await loadCoaches(team.team_id, cleanedName);
+
+      } catch (err) {
+        // Handle any errors (e.g., API down, network issues)
+        console.error("Failed to load team details:", err);
+        document.getElementById('team-name').textContent = "Error loading team.";
+      }
+    }
+
+    // Function to load the coaches of the team
+    async function loadCoaches(teamId, cleanedName) {
+      try {
+        // Fetch coaches from the API
+        const res = await fetch(`/api/coach?team_id=${teamId}`);
+        const coaches = await res.json();
+
+        const coachesSection = document.getElementById('coaches-section');
+
+        if (coaches.length > 0) {
+          // Loop through each coach and create a coach card
+          coaches.forEach(coach => {
+            const coachCard = document.createElement('div');
+            coachCard.classList.add('coach-card');
+
+            // Link to the coach profile page
+            const a = document.createElement('a');
+            a.href = `coach.html?id=${coach.coach_id}&team=${cleanedName}`;
+            a.innerHTML = `
+              <h3>${coach.c_name} ${coach.c_lastname}</h3>
+              <p>${coach.biography}</p>
+            `;
+
+            coachCard.appendChild(a);
+            coachesSection.appendChild(coachCard);
+          });
+        } else {
+          // If no coaches found, show a message
+          coachesSection.innerHTML = '<p>No coaches found for this team.</p>';
+        }
+      } catch (err) {
+        console.error("Failed to load coaches:", err);
+      }
+    }
+
+    // Load team details when the page is loaded
+    loadTeamDetails();
+  </script>
+</body>
+</html>
+
+
+
+
+

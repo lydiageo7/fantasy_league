@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Edit Matches</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            /* Global Styles */
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+                color: #343a40;
+            }
+            h1, h2 {
+                text-align: center;
+                margin-top: 20px;
+            }
+            form {
+                background: #fff;
+                padding: 20px;
+                margin: 20px auto;
+                border-radius: 8px;
+                max-width: 600px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            form div {
+                margin-bottom: 15px;
+            }
+            label {
+                margin-right: 10px;
+                font-weight: bold;
+            }
+            select, input {
+                padding: 8px;
+                width: calc(100% - 20px);
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+            }
+            button {
+                padding: 10px 15px;
+                background: #007bff;
+                border: none;
+                color: #fff;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #0056b3;
+            }
+            table {
+                width: 90%;
+                margin: 20px auto;
+                border-collapse: collapse;
+                background: #fff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            th, td {
+                border: 1px solid #dee2e6;
+                padding: 12px;
+                text-align: center;
+            }
+            th {
+                background-color: #e9ecef;
+            }
+            #editModal {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #fff;
+                border: 1px solid #ced4da;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                width: 90%;
+                max-width: 400px;
+                z-index: 10;
+            }
+            /* Modal backdrop */
+            #modalBackdrop {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 5;
+            }
+            /* Back button */
+            .back-btn {
+                display: block;
+                width: 200px;
+                margin: 20px auto;
+                text-align: center;
+                background: #28a745;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Edit Matches</h1>
+
+        <h2>Create New Match</h2>
+        <form id="createMatchForm">
+            <div>
+                <label for="team1">Team 1:</label>
+                <select name="team1" id="team1" required>
+                    <!-- Options loaded dynamically -->
+                </select>
+            </div>
+            <div>
+                <label for="team2">Team 2:</label>
+                <select name="team2" id="team2" required>
+                    <!-- Options loaded dynamically -->
+                </select>
+            </div>
+            <div>
+                <label for="matchDate">Date:</label>
+                <input type="date" id="matchDate" name="matchDate" required>
+            </div>
+            <div>
+                <label for="matchTime">Time:</label>
+                <input type="time" id="matchTime" name="matchTime" required>
+            </div>
+            <div>
+                <label for="field">Field:</label>
+                <select name="field" id="field" required>
+                    <!-- Options populated with teams' home fields -->
+                </select>
+            </div>
+            <button type="submit">Create Match</button>
+        </form>
+
+        <h2>Past Matches</h2>
+        <table id="matchesTable">
+            <thead>
+                <tr>
+                    <th>Match ID</th>
+                    <th>Team 1</th>
+                    <th>Team 2</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Field</th>
+                    <th>Delay</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be inserted here -->
+            </tbody>
+        </table>
+
+        <button class="back-btn" onclick="window.location.href='/index.html'">Back to home page</button>
+
+        <!-- Modal backdrop -->
+        <div id="modalBackdrop"></div>
+
+        <!-- Modal for editing delay and result -->
+        <div id="editModal">
+            <h2>Edit Match</h2>
+            <form id="editMatchForm">
+                <input type="hidden" id="editMatchId">
+                <div>
+                    <label for="editDelay">Delay:</label>
+                    <input type="text" id="editDelay" name="delay">
+                </div>
+                <div>
+                    <label for="editResult">Result:</label>
+                    <input type="text" id="editResult" name="result">
+                </div>
+                <button type="submit">Update</button>
+                <button type="button" onclick="closeEditModal()">Cancel</button>
+            </form>
+        </div>
+
+        <script>
+            async function loadTeams() {
+                try {
+                    const response = await fetch('/api/teams');
+                    const teams = await response.json();
+                    const team1Select = document.getElementById('team1');
+                    const team2Select = document.getElementById('team2');
+                    const fieldSelect = document.getElementById('field');
+                    team1Select.innerHTML = '';
+                    team2Select.innerHTML = '';
+                    fieldSelect.innerHTML = '';
+                    teams.forEach(team => {
+                        const opt1 = document.createElement('option');
+                        opt1.value = team.team_id;
+                        opt1.textContent = team.team_name;
+                        team1Select.appendChild(opt1);
+
+                        const opt2 = document.createElement('option');
+                        opt2.value = team.team_id;
+                        opt2.textContent = team.team_name;
+                        team2Select.appendChild(opt2);
+
+                        const fldOption = document.createElement('option');
+                        fldOption.value = team.home_field;
+                        fldOption.textContent = team.home_field;
+                        fieldSelect.appendChild(fldOption);
+                    });
+                } catch (error) {
+                    console.error('Error loading teams:', error);
+                }
+            }
+
+            async function loadMatches() {
+                try {
+                    const response = await fetch('/api/matches');
+                    const matches = await response.json();
+                    const tbody = document.getElementById('matchesTable').querySelector('tbody');
+                    tbody.innerHTML = '';
+                    matches.forEach(match => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${match.match_id}</td>
+                            <td>${match.team1_name}</td>
+                            <td>${match.team2_name}</td>
+                            <td>${match.match_date}</td>
+                            <td>${match.match_time}</td>
+                            <td>${match.field}</td>
+                            <td>${match.delay || ''}</td>
+                            <td>${match.result || ''}</td>
+                            <td><button onclick="openEditModal(${match.match_id}, '${match.delay || ''}', '${match.result || ''}')">Edit</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error('Error loading matches:', error);
+                }
+            }
+
+            document.getElementById('createMatchForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const team1 = document.getElementById('team1').value;
+                const team2 = document.getElementById('team2').value;
+                const matchDate = document.getElementById('matchDate').value;
+                const matchTime = document.getElementById('matchTime').value;
+                const field = document.getElementById('field').value;
+                const payload = { team1, team2, date: matchDate, time: matchTime, field };
+                try {
+                    const res = await fetch('/api/matches', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) {
+                        alert('Match created successfully!');
+                        loadMatches();
+                    } else {
+                        alert('Error creating match');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            function openEditModal(matchId, currentDelay, currentResult) {
+                document.getElementById('editMatchId').value = matchId;
+                document.getElementById('editDelay').value = currentDelay;
+                document.getElementById('editResult').value = currentResult;
+                document.getElementById('editModal').style.display = 'block';
+                document.getElementById('modalBackdrop').style.display = 'block';
+            }
+
+            function closeEditModal() {
+                document.getElementById('editModal').style.display = 'none';
+                document.getElementById('modalBackdrop').style.display = 'none';
+            }
+
+            document.getElementById('editMatchForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const matchId = document.getElementById('editMatchId').value;
+                const delay = document.getElementById('editDelay').value;
+                const result = document.getElementById('editResult').value;
+                const payload = { delay, result };
+                try {
+                    const res = await fetch(`/api/matches/${matchId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) {
+                        alert('Match updated successfully!');
+                        loadMatches();
+                        closeEditModal();
+                    } else {
+                        alert('Error updating match');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+            loadTeams();
+            loadMatches();
+        </script>
+    </body>
+</html>
