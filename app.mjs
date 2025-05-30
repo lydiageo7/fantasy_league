@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcrypt';
 import { sessionMiddleware } from './setup/setup-session.js';
 import { login, register } from './controller/adminController.mjs';
-import { getTeams, addTeam, removeTeam, updateTeamName } from './controller/teamController.mjs';
-import matchController from './controller/matchController.mjs';
+//import { getTeams, addTeam, removeTeam, updateTeamName } from './controller/teamController.mjs';
+//import matchController from './controller/matchController.mjs';
 
 import teamsViewsRoute from './routes/teams_views.js';
 import teamsRoute from './routes/teams.js';
@@ -14,6 +14,7 @@ import playersRoute from './routes/players.js';
 import coachRoute from './routes/coach.js';
 import rankingsRoute from './routes/rankings.js';
 import statisticsRoute from './routes/statistics.js';
+import matchesRoute from './routes/matches.js';
 
 // Get current filename & directory
 const __filename = fileURLToPath(import.meta.url);
@@ -49,18 +50,18 @@ function ensureLoggedIn(req, res, next) {
   }
 }
 
-// 🌟 View routes
+//  View routes
 app.use('/teams', teamsViewsRoute);
 
-// 🌟 API routes
+// API routes
 app.use('/api/teams', teamsRoute);
 app.use('/api/players', playersRoute);
 app.use('/api/coach', coachRoute);
-app.use('/api/matches', matchController);
+app.use('/api/matches', matchesRoute);
 app.use('/api/rankings', rankingsRoute);
 app.use('/api/statistics', statisticsRoute);
 
-// 🌟 Admin views & login/logout
+//  Admin views & login/logout
 app.get('/admin/login', (req, res) => {
   res.render('admin-login', { title: 'Admin Login' });
 });
@@ -103,18 +104,20 @@ app.get('/admin/logout', (req, res) => {
   });
 });
 
-// 🌟 Example protected admin-only page
-app.get('/admin/edit-matches', ensureLoggedIn, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'edit_matches.html'));
-});
+//  Example protected admin-only page
+//app.get('/admin/edit-matches', ensureLoggedIn, (req, res) => {
+ // res.sendFile(path.join(__dirname, 'public', 'edit_matches.html'));
+//});
 
-// 🌟 Test route
-app.get('/api/test', (req, res) => {
-  res.json({ message: "Root test route working!" });
-});
+//  Test route
+//app.get('/api/test', (req, res) => {
+ // res.json({ message: "Root test route working!" });
+//});
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
   console.log(`Server running at http://localhost:${PORT}`);
 });
