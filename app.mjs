@@ -7,6 +7,7 @@ import { sessionMiddleware } from './setup/setup-session.js';
 import { login, register } from './controller/adminController.mjs';
 import { getTeams, addTeam, removeTeam, updateTeamName } from './controller/teamController.mjs';
 import matchController from './controller/matchController.mjs';
+import teamsModificationRoute from './routes/teams_modifications.js';
 
 import teamsViewsRoute from './routes/teams_views.js';
 import teamsRoute from './routes/teams.js';
@@ -34,6 +35,9 @@ app.use(sessionMiddleware);
 
 // for editing matches
 app.use('/api', matchController);
+
+// for team modifications:
+app.use('/api/teams-modify', teamsModificationRoute);
 
 // Handlebars (for .hbs views)
 app.engine('hbs', engine({
@@ -117,6 +121,7 @@ app.get('/admin/edit-matches', ensureLoggedIn, (req, res) => {
 app.get('/api/test', (req, res) => {
  res.json({ message: "Root test route working!" });
 });
+
 
 // Start server
 const PORT = process.env.PORT || 3000;
