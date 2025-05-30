@@ -5,8 +5,8 @@ import { fileURLToPath } from 'url';
 import bcrypt from 'bcrypt';
 import { sessionMiddleware } from './setup/setup-session.js';
 import { login, register } from './controller/adminController.mjs';
-//import { getTeams, addTeam, removeTeam, updateTeamName } from './controller/teamController.mjs';
-//import matchController from './controller/matchController.mjs';
+import { getTeams, addTeam, removeTeam, updateTeamName } from './controller/teamController.mjs';
+import matchController from './controller/matchController.mjs';
 
 import teamsViewsRoute from './routes/teams_views.js';
 import teamsRoute from './routes/teams.js';
@@ -31,6 +31,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session handling
 app.use(sessionMiddleware);
+
+// for editing matches
+app.use('/api', matchController);
 
 // Handlebars (for .hbs views)
 app.engine('hbs', engine({
@@ -60,6 +63,7 @@ app.use('/api/coach', coachRoute);
 app.use('/api/matches', matchesRoute);
 app.use('/api/rankings', rankingsRoute);
 app.use('/api/statistics', statisticsRoute);
+
 
 //  Admin views & login/logout
 app.get('/admin/login', (req, res) => {
@@ -105,19 +109,17 @@ app.get('/admin/logout', (req, res) => {
 });
 
 //  Example protected admin-only page
-//app.get('/admin/edit-matches', ensureLoggedIn, (req, res) => {
- // res.sendFile(path.join(__dirname, 'public', 'edit_matches.html'));
-//});
+app.get('/admin/edit-matches', ensureLoggedIn, (req, res) => {
+ res.sendFile(path.join(__dirname, 'public', 'edit_matches.html'));
+});
 
 //  Test route
-//app.get('/api/test', (req, res) => {
- // res.json({ message: "Root test route working!" });
-//});
+app.get('/api/test', (req, res) => {
+ res.json({ message: "Root test route working!" });
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
   console.log(`Server running at http://localhost:${PORT}`);
 });

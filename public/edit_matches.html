@@ -178,127 +178,154 @@
         </div>
 
         <script>
-            async function loadTeams() {
-                try {
-                    const response = await fetch('/api/teams');
-                    const teams = await response.json();
-                    const team1Select = document.getElementById('team1');
-                    const team2Select = document.getElementById('team2');
-                    const fieldSelect = document.getElementById('field');
-                    team1Select.innerHTML = '';
-                    team2Select.innerHTML = '';
-                    fieldSelect.innerHTML = '';
-                    teams.forEach(team => {
-                        const opt1 = document.createElement('option');
-                        opt1.value = team.team_id;
-                        opt1.textContent = team.team_name;
-                        team1Select.appendChild(opt1);
+    async function loadTeams() {
+        try {
+            const response = await fetch('/api/teams');
+            const teams = await response.json();
+            const team1Select = document.getElementById('team1');
+            const team2Select = document.getElementById('team2');
+            const fieldSelect = document.getElementById('field');
+            team1Select.innerHTML = '';
+            team2Select.innerHTML = '';
+            fieldSelect.innerHTML = '';
+            teams.forEach(team => {
+                const opt1 = document.createElement('option');
+                opt1.value = team.team_id;
+                opt1.textContent = team.team_name;
+                team1Select.appendChild(opt1);
 
-                        const opt2 = document.createElement('option');
-                        opt2.value = team.team_id;
-                        opt2.textContent = team.team_name;
-                        team2Select.appendChild(opt2);
+                const opt2 = document.createElement('option');
+                opt2.value = team.team_id;
+                opt2.textContent = team.team_name;
+                team2Select.appendChild(opt2);
 
-                        const fldOption = document.createElement('option');
-                        fldOption.value = team.home_field;
-                        fldOption.textContent = team.home_field;
-                        fieldSelect.appendChild(fldOption);
-                    });
-                } catch (error) {
-                    console.error('Error loading teams:', error);
-                }
-            }
-
-            async function loadMatches() {
-                try {
-                    const response = await fetch('/api/matches');
-                    const matches = await response.json();
-                    const tbody = document.getElementById('matchesTable').querySelector('tbody');
-                    tbody.innerHTML = '';
-                    matches.forEach(match => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${match.match_id}</td>
-                            <td>${match.team1_name}</td>
-                            <td>${match.team2_name}</td>
-                            <td>${match.match_date}</td>
-                            <td>${match.match_time}</td>
-                            <td>${match.field}</td>
-                            <td>${match.delay || ''}</td>
-                            <td>${match.result || ''}</td>
-                            <td><button onclick="openEditModal(${match.match_id}, '${match.delay || ''}', '${match.result || ''}')">Edit</button></td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } catch (error) {
-                    console.error('Error loading matches:', error);
-                }
-            }
-
-            document.getElementById('createMatchForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const team1 = document.getElementById('team1').value;
-                const team2 = document.getElementById('team2').value;
-                const matchDate = document.getElementById('matchDate').value;
-                const matchTime = document.getElementById('matchTime').value;
-                const field = document.getElementById('field').value;
-                const payload = { team1, team2, date: matchDate, time: matchTime, field };
-                try {
-                    const res = await fetch('/api/matches', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (res.ok) {
-                        alert('Match created successfully!');
-                        loadMatches();
-                    } else {
-                        alert('Error creating match');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
+                const fldOption = document.createElement('option');
+                fldOption.value = team.home_field;
+                fldOption.textContent = team.home_field;
+                fieldSelect.appendChild(fldOption);
             });
+        } catch (error) {
+            console.error('Error loading teams:', error);
+        }
+    }
 
-            function openEditModal(matchId, currentDelay, currentResult) {
-                document.getElementById('editMatchId').value = matchId;
-                document.getElementById('editDelay').value = currentDelay;
-                document.getElementById('editResult').value = currentResult;
-                document.getElementById('editModal').style.display = 'block';
-                document.getElementById('modalBackdrop').style.display = 'block';
-            }
-
-            function closeEditModal() {
-                document.getElementById('editModal').style.display = 'none';
-                document.getElementById('modalBackdrop').style.display = 'none';
-            }
-
-            document.getElementById('editMatchForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const matchId = document.getElementById('editMatchId').value;
-                const delay = document.getElementById('editDelay').value;
-                const result = document.getElementById('editResult').value;
-                const payload = { delay, result };
-                try {
-                    const res = await fetch(`/api/matches/${matchId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (res.ok) {
-                        alert('Match updated successfully!');
-                        loadMatches();
-                        closeEditModal();
-                    } else {
-                        alert('Error updating match');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
+    async function loadMatches() {
+        try {
+            const response = await fetch('/api/matches');
+            const matches = await response.json();
+            const tbody = document.getElementById('matchesTable').querySelector('tbody');
+            tbody.innerHTML = '';
+            matches.forEach(match => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${match.match_id}</td>
+                    <td>${match.team1_name}</td>
+                    <td>${match.team2_name}</td>
+                    <td>${match.match_date}</td>
+                    <td>${match.match_time}</td>
+                    <td>${match.field}</td>
+                    <td>${match.delay || ''}</td>
+                    <td>${match.result || ''}</td>
+                    <td><button onclick="openEditModal(${match.match_id}, '${match.delay || ''}', '${match.result || ''}')">Edit</button></td>
+                `;
+                tbody.appendChild(row);
             });
+        } catch (error) {
+            console.error('Error loading matches:', error);
+        }
+    }
 
-            loadTeams();
-            loadMatches();
-        </script>
+    // Log selection changes
+    document.getElementById('team1').addEventListener('change', (e) => {
+        console.log("Team 1 selected:", e.target.value);
+    });
+    document.getElementById('team2').addEventListener('change', (e) => {
+        console.log("Team 2 selected:", e.target.value);
+    });
+    document.getElementById('matchDate').addEventListener('change', (e) => {
+        console.log("Match Date selected:", e.target.value);
+    });
+    document.getElementById('matchTime').addEventListener('change', (e) => {
+        console.log("Match Time selected:", e.target.value);
+    });
+    document.getElementById('field').addEventListener('change', (e) => {
+        console.log("Field selected:", e.target.value);
+    });
+
+    document.getElementById('createMatchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const team1 = document.getElementById('team1').value;
+        const team2 = document.getElementById('team2').value;
+        const matchDate = document.getElementById('matchDate').value;
+        const matchTime = document.getElementById('matchTime').value;
+        const field = document.getElementById('field').value;
+        const payload = { team1, team2, date: matchDate, time: matchTime, field };
+        console.log("Submitting createMatchForm with selections:", payload);
+        try {
+            const res = await fetch('/api/matches', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                console.log("Match created successfully.");
+                alert('Match created successfully!');
+                loadMatches();
+            } else {
+                const errorMsg = await res.text();
+                console.error("Error creating match:", errorMsg);
+                alert('Error creating match');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    function openEditModal(matchId, currentDelay, currentResult) {
+        document.getElementById('editMatchId').value = matchId;
+        document.getElementById('editDelay').value = currentDelay;
+        document.getElementById('editResult').value = currentResult;
+        document.getElementById('editModal').style.display = 'block';
+        document.getElementById('modalBackdrop').style.display = 'block';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('modalBackdrop').style.display = 'none';
+    }
+
+    document.getElementById('editMatchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const matchId = document.getElementById('editMatchId').value;
+        const delay = document.getElementById('editDelay').value;
+        const result = document.getElementById('editResult').value;
+        const payload = { delay, result };
+        console.log("Submitting editMatchForm for match", matchId, "with selections:", payload);
+        try {
+            const res = await fetch(`/api/matches/${matchId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                console.log("Match updated successfully for match", matchId);
+                alert('Match updated successfully!');
+                loadMatches();
+                closeEditModal();
+            } else {
+                const errorMsg = await res.text();
+                console.error("Error updating match:", errorMsg);
+                alert('Error updating match');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    loadTeams();
+    loadMatches();
+</script>
+
+            
     </body>
 </html>

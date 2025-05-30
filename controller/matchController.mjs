@@ -45,6 +45,9 @@ router.post('/matches', ensureLoggedIn, async (req, res) => {
   if (!team1 || !team2 || !date || !time || !field) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
+  
+  console.debug('Creating match with:', { team1, team2, date, time, field });
+  
   try {
     // Insert match details
     const result = await db.run(
@@ -52,14 +55,16 @@ router.post('/matches', ensureLoggedIn, async (req, res) => {
       [date, time, field]
     );
     const matchId = result.lastID;
-
+    console.debug(`Inserted match with ID ${matchId}`);
+    
     // Insert into Playing_Match table
     await db.run(
       `INSERT INTO Playing_Match (playing_match_id, home_team_id, guest_team_id, score_home_team, score_guest_team)
        VALUES (?, ?, ?, 0, 0)`,
       [matchId, team1, team2]
     );
-
+    console.debug(`Inserted playing match details for match ID ${matchId}`);
+    
     res.status(201).json({
       match_id: matchId,
       match_date: date,
@@ -70,21 +75,29 @@ router.post('/matches', ensureLoggedIn, async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating match:', error);
-    res.status(500).json({ error: 'Database error while creating match.' });
+    res.status(500).json({ 
+      error: 'Database error while creating match.',
+      details: error.message 
+    });
   }
 });
 
 // PUT /api/matches/:matchId – update delay and result (admin-only)
+// PUT /api/matches/:matchId – update delay and result (admin-only)
 router.put('/matches/:matchId', ensureLoggedIn, async (req, res) => {
   const matchId = parseInt(req.params.matchId, 10);
   const { delay, result } = req.body;
+
+  console.debug(`Updating match ${matchId} with delay: ${delay} and result: ${result}`);
+  
   try {
-    await db.run(`UPDATE Match SET delay = ?, result = ? WHERE match_id = ?`, [
+    const updateRes = await db.run(`UPDATE Match SET delay = ?, result = ? WHERE match_id = ?`, [
       delay,
       result,
       matchId
     ]);
-
+    console.debug('Update result:', updateRes);
+    
     // Return updated match
     const updated = await db.get(
       `
@@ -97,10 +110,13 @@ router.put('/matches/:matchId', ensureLoggedIn, async (req, res) => {
         WHERE M.match_id = ?
       `,
       [matchId]
-    );
+    );    
+    console.debug('Fetched updated match:', updated);
+    
     res.json(updated);
   } catch (error) {
-    console.error(error);
+    console.error('Error updating match:', error);
+    
     res.status(500).json({ error: 'Database error while updating match.' });
   }
 });
